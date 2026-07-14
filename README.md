@@ -1,83 +1,180 @@
-# Testing a full stack application
-* Unit and integration test of Angular front-end with Jest
-* End to end tests on Angular mocking API response with Cypress
-* Unit and integration tests of Spring back-end using Junit and Mockito
+# Full-Stack Yoga App Testing
 
-## Guide to run the app :
-1. Clone the repository somewhere in your machine and go inside it :  
-```powershell
-git clone https://github.com/gdaume24/Test-Full-Stack-App.git
-cd Test-Full-Stack-App
+Application full-stack Angular + Spring Boot autour de la gestion de cours de yoga, mise en valeur comme projet de tests automatisés.
+
+## Objectif du projet
+
+Ce projet montre la mise en place d'une stratégie de tests complète sur une application existante :
+
+- tests unitaires et d'intégration Angular avec Jest ;
+- tests end-to-end avec Cypress ;
+- tests unitaires et d'intégration Spring Boot avec JUnit et Mockito ;
+- rapports de couverture front-end et back-end ;
+- API sécurisée avec authentification JWT.
+
+## Fonctionnalités applicatives
+
+L'application permet à des utilisateurs de consulter et rejoindre des sessions de yoga. Un administrateur peut gérer les sessions et les enseignants.
+
+Fonctionnalités principales :
+
+- inscription et connexion utilisateur ;
+- authentification JWT ;
+- consultation des sessions de yoga ;
+- création, modification et suppression de sessions côté admin ;
+- consultation du profil utilisateur ;
+- participation / désinscription à une session.
+
+## Stack technique
+
+### Front-end
+
+- Angular 14
+- Angular Material
+- RxJS
+- Jest
+- Cypress
+
+### Back-end
+
+- Java 8
+- Spring Boot 2.6
+- Spring Security
+- JWT
+- Spring Data JPA
+- MySQL
+- JUnit / Mockito
+- Maven
+
+### Infra locale
+
+- Docker Compose pour MySQL
+- Postman collection disponible dans `ressources/postman/`
+
+## Structure du dépôt
+
+```text
+front/       Application Angular
+back/        API Spring Boot sécurisée par JWT
+db/          Docker Compose et image MySQL locale
+ressources/  Collection Postman et ressources de test
 ```
-Now we want to run first the database :  
-2. Ensure you have your docker engine running  
-3. Create a .env file in db folder. (Docker is unable to detect it if it is in the root folder).  
-Set your personal variables in the .env file
-```
-MYSQL_USERNAME=your_user
-MYSQL_ROOT_PASSWORD=your_root_password
-MYSQL_PASSWORD=your_password
-```
-4. Create the MySQL databse
-```powershell
+
+## Lancer l'application en local
+
+### 1. Préparer la base MySQL
+
+Créer `db/.env` avec les variables attendues par `db/compose.yml` :
+
+- `MYSQL_USERNAME`
+- `MYSQL_ROOT_PASSWORD`
+- `MYSQL_PASSWORD`
+
+Démarrer MySQL :
+
+```bash
 cd db
-docker-compose up -d
+docker compose up -d
 ```
-Now that your database is running, we will prepare the back-end dependencies :  
-5. Create .env file in the "back" folder, here is the template of the file for you to set your personal variables in.  
-You need to set the 3 same variables from the .env of the database as in the template
-```
-MYSQL_URL=your_mysql_url
-MYSQL_USERNAME=your_user
-MYSQL_ROOT_PASSWORD=your_root_password
-MYSQL_PASSWORD=your_password
 
-SECURITY_JWT_SECRET_KEY=your_jwt_key
-SECURITY_JWT_EXPIRATION_TIME=your_jwt_expiration_time
+La base expose MySQL sur le port `3307` côté machine.
+
+### 2. Configurer le back-end
+
+Créer `back/.env` avec les variables attendues par `back/src/main/resources/application.properties` :
+
+- `MYSQL_URL`
+- `MYSQL_USERNAME`
+- `MYSQL_PASSWORD`
+- `SECURITY_JWT_SECRET_KEY`
+- `SECURITY_JWT_EXPIRATION_TIME`
+
+Pour une installation locale classique, `MYSQL_URL` pointe vers la base MySQL du Docker Compose sur `localhost:3307`.
+
+### 3. Lancer l'API Spring Boot
+
+```bash
+cd back
+mvn spring-boot:run
 ```
-6. Make sure you have "Extension pack for Java installed" in your VSCode, and a folder containing the version 11 of jdk set in your JAVA_HOME system environment variable.  
-Before starting the back, we want to prepare the front-end dependencies, that can imply the restart of Vscode.  
-7. Install nodejs 16 (having Node Version Manager (NVM) makes this step easier)  
-8. Install Angular CLI 14 :
-  ```npm install -g @angular/cli@14```
-9. Install dependencies :  
+
+API disponible par défaut sur :
+
+```text
+http://localhost:8080
 ```
+
+### 4. Lancer le front Angular
+
+```bash
 cd front
-npm i
-```
-10. Run back server :  
-In your VSCode file explorer, find the file back/src/main/java/com/openclassrooms/startedjwt/SpringBootSecurityJwtApplication.java, right click on it and click 'Run Java'  
-12. Run front server  
-```
-ng serve
+npm ci
+npm start
 ```
 
-Now the whole stack is running, you can test the app manually  
--> <http://localhost:4200/>
+Application disponible sur :
 
-## Guide to obtain test coverages
-
-### To run unit and integration tests coverage on front-end :
+```text
+http://localhost:4200
 ```
+
+Le compte administrateur de démonstration est créé par le script SQL dans `db/script.sql`.
+
+## Tests et couverture
+
+### Tests front-end Jest
+
+```bash
 cd front
-npm run test
+npm test
 ```
-The report will be shown in the terminal, the html file with the details is located at `coverage/jest/lcov-report/index.html`  
-<ins>Note</ins> : The tests that have been edited manually are :
-- features/auth/component/login/login.component.spec.ts
-- features/auth/component/register/register.component.spec.ts
-- features/sessions/components/form/form.component.spec.ts  
-- services/sessions.service.spec.ts  
-  
-### To run 'end to end' tests coverage on front-end :  
+
+Rapport de couverture :
+
+```text
+front/coverage/jest/lcov-report/index.html
 ```
+
+### Tests end-to-end Cypress
+
+```bash
+cd front
 npm run e2e:ci
-```  
-The report will be shown in the terminal, the html file with the details is located at `coverage/lcov-report/index.html`
+```
 
-### To run unit and integration tests coverage on back-end : 
-In file explorer of VSCode, in `back/src`, right click on test, and click on "Run Tests with Coverage" option.  
-You will see the details of the code coverage directly in the file explorer of VSCode.
+Rapport de couverture E2E :
 
+```bash
+npm run e2e:coverage
+```
 
+Rapport HTML :
 
+```text
+front/coverage/lcov-report/index.html
+```
+
+### Tests back-end JUnit / Mockito
+
+```bash
+cd back
+mvn test
+```
+
+Rapport JaCoCo :
+
+```text
+back/target/site/jacoco/index.html
+```
+
+## Ce que le projet met en valeur
+
+- Mise en place d'une stratégie de tests complète sur une app full-stack.
+- Couverture des composants Angular, services, guards et intercepteurs.
+- Tests API Spring Boot avec services, contrôleurs, sécurité JWT et repositories.
+- Parcours utilisateur validés avec Cypress.
+- Configuration locale reproductible avec Docker Compose.
+
+## Résumé portfolio
+
+Projet full-stack Angular/Spring Boot centré sur la qualité logicielle : sécurisation JWT, base MySQL Dockerisée, tests front/back/e2e et rapports de couverture. Il démontre la capacité à fiabiliser une application existante avec une vraie stratégie de test automatisée.

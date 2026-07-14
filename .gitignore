@@ -3,3 +3,11 @@ back/.env
 db/.env
 back/mvn script.bat
 front/results
+node_modules/
+front/node_modules/
+front/dist/
+front/coverage/
+front/.angular/
+back/target/
+*.log
+.DS_Store
